@@ -409,6 +409,51 @@ input[type=range]::-moz-range-thumb {
 /* ── DIVIDER ──────────────────────────────────── */
 .divider { height: 1px; background: var(--border); margin: 28px 0; }
 
+/* ── CONVERSÕES SECTION ──────────────────────── */
+.plat-btn {
+  background: var(--graphite3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+  color: var(--text-secondary);
+}
+.plat-btn:hover { border-color: var(--border2); color: var(--text-primary); }
+.plat-btn.active { border-color: var(--green); background: rgba(57,255,20,0.06); color: var(--text-primary); }
+.plat-name { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+.plat-sub { font-size: 11px; color: var(--text-muted); font-family: var(--mono); }
+.plat-btn.active .plat-sub { color: var(--green); }
+
+.cvr-ref-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--graphite3);
+  cursor: pointer;
+  transition: background 0.12s;
+  border: 1px solid transparent;
+}
+.cvr-ref-row:hover { background: var(--graphite4); border-color: var(--border2); }
+.cvr-ref-label { font-size: 12px; color: var(--text-secondary); }
+.cvr-ref-val { font-family: var(--mono); font-size: 12px; color: var(--green); }
+
+.goto-btn {
+  background: var(--graphite3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 9px 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: var(--font);
+}
+.goto-btn:hover { background: var(--graphite4); color: var(--text-primary); border-color: var(--green); }
+
 /* ── MOBILE TOGGLE ────────────────────────────── */
 .mob-toggle {
   display: none;
@@ -448,6 +493,15 @@ input[type=range]::-moz-range-thumb {
       <span class="brand-name">Spun Mídia</span>
     </div>
     <div class="brand-sub">Simulador de Modelos<br>de Negócio</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Pré-deal</div>
+    <button class="nav-item" onclick="showSection('conversoes')">
+      <span class="nav-num">00</span>
+      <span class="nav-dot"></span>
+      Estimativa de Conversões
+    </button>
   </div>
 
   <div class="sidebar-section">
@@ -498,6 +552,134 @@ input[type=range]::-moz-range-thumb {
   </div>
 
   <div class="content">
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- 00 ESTIMATIVA DE CONVERSÕES               -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-conversoes">
+      <div class="section-intro">
+        <div class="section-tag">
+          <span class="section-tag-dot" style="background:#60a5fa"></span>
+          Pré-deal
+        </div>
+        <h2 class="section-h">Estimativa de Conversões</h2>
+        <p class="section-desc">Antes de sentar na reunião, use essa calculadora para estimar quantas conversões uma campanha pode gerar — com base em budget, plataforma e produto. O resultado alimenta os outros modelos.</p>
+      </div>
+
+      <!-- PLATAFORMA -->
+      <div class="panel mb24">
+        <div class="panel-label">Plataforma &amp; Benchmarks de Mercado</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+          <button class="plat-btn active" id="pb-meta" onclick="selectPlat('meta')">
+            <div class="plat-name">Meta Ads</div>
+            <div class="plat-sub">CPC médio: R$ 1,50</div>
+          </button>
+          <button class="plat-btn" id="pb-google" onclick="selectPlat('google')">
+            <div class="plat-name">Google Ads</div>
+            <div class="plat-sub">CPC médio: R$ 3,00</div>
+          </button>
+          <button class="plat-btn" id="pb-tiktok" onclick="selectPlat('tiktok')">
+            <div class="plat-name">TikTok Ads</div>
+            <div class="plat-sub">CPC médio: R$ 0,80</div>
+          </button>
+          <button class="plat-btn" id="pb-prog" onclick="selectPlat('prog')">
+            <div class="plat-name">Programático</div>
+            <div class="plat-sub">CPC médio: R$ 0,50</div>
+          </button>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);padding:10px 14px;background:var(--graphite3);border-radius:var(--radius-sm);">
+          Benchmarks médios para o mercado brasileiro em 2025–2026. Selecione a plataforma para pré-preencher o CPC — você pode ajustar manualmente.
+        </div>
+      </div>
+
+      <!-- INPUTS -->
+      <div class="grid-2 mb24">
+        <div class="panel">
+          <div class="panel-label">Parâmetros da Campanha</div>
+          <div class="field">
+            <div class="field-header"><span class="field-label">Budget de mídia / mês (ad spend)</span><span class="field-val c-green" id="cv-budget-v">R$ 6.000</span></div>
+            <input type="range" min="500" max="200000" step="500" value="6000" id="cv-budget" oninput="calcCV()">
+          </div>
+          <div class="field">
+            <div class="field-header"><span class="field-label">CPC médio estimado</span><span class="field-val" id="cv-cpc-v">R$ 1,50</span></div>
+            <input type="range" min="0.1" max="30" step="0.1" value="1.5" id="cv-cpc" oninput="calcCV()">
+          </div>
+          <div class="field">
+            <div class="field-header"><span class="field-label">Taxa de conversão da página — CVR</span><span class="field-val" id="cv-cvr-v">3%</span></div>
+            <input type="range" min="0.5" max="30" step="0.5" value="3" id="cv-cvr" oninput="calcCV()">
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-label">Referências de CVR por Tipo de Produto</div>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div class="cvr-ref-row" onclick="setCVR(1.5)">
+              <div class="cvr-ref-label">E-commerce geral</div>
+              <div class="cvr-ref-val">1–2%</div>
+            </div>
+            <div class="cvr-ref-row" onclick="setCVR(3)">
+              <div class="cvr-ref-label">Infoproduto / curso online</div>
+              <div class="cvr-ref-val">2–4%</div>
+            </div>
+            <div class="cvr-ref-row" onclick="setCVR(5)">
+              <div class="cvr-ref-label">Lead (formulário de cadastro)</div>
+              <div class="cvr-ref-val">4–8%</div>
+            </div>
+            <div class="cvr-ref-row" onclick="setCVR(8)">
+              <div class="cvr-ref-label">App install / gaming</div>
+              <div class="cvr-ref-val">6–12%</div>
+            </div>
+            <div class="cvr-ref-row" onclick="setCVR(1)">
+              <div class="cvr-ref-label">Produto premium / high ticket</div>
+              <div class="cvr-ref-val">0,5–1,5%</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);margin-top:12px;">Clique em uma linha para aplicar o CVR médio.</div>
+        </div>
+      </div>
+
+      <!-- RESULTADO -->
+      <div class="grid-4 mb24">
+        <div class="metric-card">
+          <div class="metric-label">Cliques estimados</div>
+          <div class="metric-value c-blue" id="cv-cliques">—</div>
+          <div class="metric-sub">por mês</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Conversões estimadas</div>
+          <div class="metric-value c-green" id="cv-conv">—</div>
+          <div class="metric-sub">por mês</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">CPA implícito</div>
+          <div class="metric-value c-purple" id="cv-cpa">—</div>
+          <div class="metric-sub">budget ÷ conversões</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Custo por clique real</div>
+          <div class="metric-value c-muted" id="cv-cpc-real">—</div>
+          <div class="metric-sub">confirmação</div>
+        </div>
+      </div>
+
+      <!-- FÓRMULA VISUAL -->
+      <div class="panel mb24">
+        <div class="panel-label">Como foi calculado</div>
+        <div id="cv-formula" style="font-family:var(--mono);font-size:13px;color:var(--text-secondary);line-height:2;"></div>
+      </div>
+
+      <!-- LEVAR AOS MODELOS -->
+      <div class="panel" style="border-color:rgba(57,255,20,0.2);">
+        <div class="panel-label">Usar essa estimativa nos modelos</div>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;line-height:1.6;">
+          Com <strong id="cv-conv-inline" style="color:var(--text-primary)">—</strong> conversões estimadas e CPA implícito de <strong id="cv-cpa-inline" style="color:var(--text-primary)">—</strong>, você pode agora simular cada modelo de remuneração. Os botões abaixo abrem o modelo com os valores já preenchidos.
+        </p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="goto-btn" onclick="goToModel('tripartite')">→ Abrir no Modelo 01 — Tripartite</button>
+          <button class="goto-btn" onclick="goToModel('floor')">→ Abrir no Modelo 02 — Floor/Ceiling</button>
+          <button class="goto-btn" onclick="goToModel('revshare')">→ Abrir no Modelo 02b — Rev Share</button>
+        </div>
+      </div>
+    </div>
 
     <!-- ══════════════════════════════════════════ -->
     <!-- 01 TRIPARTITE                              -->
@@ -907,6 +1089,7 @@ const brl = v => 'R$\u00a0' + Math.round(v).toLocaleString('pt-BR');
 const p = v => Math.round(v) + '%';
 
 const titles = {
+  conversoes: ['Estimativa de Conversões', 'Pré-deal'],
   tripartite: ['Operação Tripartite', 'Modelo 01'],
   floor: ['Floor / Ceiling', 'Modelo 02'],
   revshare: ['Rev Share', 'Modelo 02b'],
@@ -1103,7 +1286,88 @@ function calcC() {
   else setAlert('c-alert','ok','✓','Fee justo — cliente ganha '+brl(ganho)+'/mês e paga '+brl(rs)+'. ROI do cliente: '+(ganho/rs).toFixed(1)+'x sobre o investimento na Spun.');
 }
 
-calcT(); calcF(); calcR(); calcE(); calcC();
+// ── ESTIMATIVA DE CONVERSÕES ────────────────────
+const platCPCs = { meta: 1.5, google: 3.0, tiktok: 0.8, prog: 0.5 };
+let currentPlat = 'meta';
+
+function selectPlat(id) {
+  currentPlat = id;
+  document.querySelectorAll('.plat-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pb-'+id).classList.add('active');
+  const cpc = platCPCs[id];
+  document.getElementById('cv-cpc').value = cpc;
+  calcCV();
+}
+
+function setCVR(val) {
+  document.getElementById('cv-cvr').value = val;
+  calcCV();
+}
+
+function calcCV() {
+  const budget = +document.getElementById('cv-budget').value;
+  const cpc = +document.getElementById('cv-cpc').value;
+  const cvr = +document.getElementById('cv-cvr').value / 100;
+
+  document.getElementById('cv-budget-v').textContent = brl(budget);
+  document.getElementById('cv-cpc-v').textContent = 'R$\u00a0' + cpc.toFixed(2).replace('.',',');
+  document.getElementById('cv-cvr-v').textContent = (cvr*100).toFixed(1).replace('.',',') + '%';
+
+  const cliques = cpc > 0 ? Math.round(budget / cpc) : 0;
+  const conv = Math.round(cliques * cvr);
+  const cpaImpl = conv > 0 ? budget / conv : 0;
+
+  document.getElementById('cv-cliques').textContent = cliques.toLocaleString('pt-BR');
+  document.getElementById('cv-conv').textContent = conv.toLocaleString('pt-BR');
+  document.getElementById('cv-cpa').textContent = brl(cpaImpl);
+  document.getElementById('cv-cpc-real').textContent = 'R$\u00a0' + cpc.toFixed(2).replace('.',',');
+
+  document.getElementById('cv-formula').innerHTML =
+    `<span style="color:var(--text-muted)">Cliques</span> = ${brl(budget)} ÷ R$\u00a0${cpc.toFixed(2).replace('.',',')} = <span style="color:#60a5fa">${cliques.toLocaleString('pt-BR')} cliques</span><br>` +
+    `<span style="color:var(--text-muted)">Conversões</span> = ${cliques.toLocaleString('pt-BR')} × ${(cvr*100).toFixed(1).replace('.',',')}% = <span style="color:var(--green)">${conv.toLocaleString('pt-BR')} conversões</span><br>` +
+    `<span style="color:var(--text-muted)">CPA implícito</span> = ${brl(budget)} ÷ ${conv.toLocaleString('pt-BR')} = <span style="color:#a78bfa">${brl(cpaImpl)}</span>`;
+
+  document.getElementById('cv-conv-inline').textContent = conv.toLocaleString('pt-BR');
+  document.getElementById('cv-cpa-inline').textContent = brl(cpaImpl);
+
+  // store for cross-model use
+  window._cvConv = conv;
+  window._cvCPA = cpaImpl;
+  window._cvBudget = budget;
+}
+
+function goToModel(id) {
+  const conv = window._cvConv || 100;
+  const cpa = window._cvCPA || 150;
+  const budget = window._cvBudget || 6000;
+
+  if (id === 'tripartite') {
+    // set conversions slider — find closest step-10 value
+    const el = document.getElementById('t-conv');
+    el.value = Math.min(Math.max(Math.round(conv/10)*10, +el.min), +el.max);
+    calcT();
+  }
+  if (id === 'floor') {
+    // set historico = cpaImpl, floor = cpaImpl * 0.67, conversoes
+    const hEl = document.getElementById('f-hist');
+    hEl.value = Math.min(Math.max(Math.round(cpa/5)*5, +hEl.min), +hEl.max);
+    const fEl = document.getElementById('f-floor');
+    fEl.value = Math.min(Math.max(Math.round(cpa*0.67/5)*5, +fEl.min), +fEl.max);
+    const cEl = document.getElementById('f-conv');
+    cEl.value = Math.min(Math.max(Math.round(conv/10)*10, +cEl.min), +cEl.max);
+    calcF();
+  }
+  if (id === 'revshare') {
+    const aEl = document.getElementById('r-ads');
+    aEl.value = Math.min(Math.max(Math.round(budget/500)*500, +aEl.min), +aEl.max);
+    const cEl = document.getElementById('r-conv');
+    cEl.value = Math.min(Math.max(Math.round(conv/10)*10, +cEl.min), +cEl.max);
+    calcR();
+  }
+  showSection(id);
+}
+
+calcT(); calcF(); calcR(); calcE(); calcC(); calcCV();
 </script>
 </body>
 </html>
