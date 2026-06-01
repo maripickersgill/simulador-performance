@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spun Mídia — Simulador de Modelos de Negócio</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/dist/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --spun-green: #39FF14;
+    --spun-red: #E8350A;
+    --spun-purple: #7B2FBE;
+    --spun-graphite: #1A1A1A;
+    --spun-ice: #F4F4F0;
+    --bg: #f5f5f2;
+    --surface: #ffffff;
+    --surface2: #f0f0ec;
+    --text: #1A1A1A;
+    --text2: #555550;
+    --text3: #888882;
+    --border: rgba(0,0,0,0.10);
+    --border2: rgba(0,0,0,0.18);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111111;
+      --surface: #1c1c1c;
+      --surface2: #252525;
+      --text: #f0f0ec;
+      --text2: #a0a09a;
+      --text3: #666660;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.16);
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .container { max-width: 860px; margin: 0 auto; }
+
+  /* HEADER */
+  .sim-header {
+    background: var(--spun-graphite);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .sim-logo { width: 10px; height: 44px; background: var(--spun-green); border-radius: 2px; flex-shrink: 0; }
+  .sim-header-text { flex: 1; }
+  .sim-header h1 { color: var(--spun-green); font-size: 10px; font-weight: 500; letter-spacing: 4px; margin: 0 0 4px; text-transform: uppercase; }
+  .sim-header p { color: #9ca3af; font-size: 13px; margin: 0; }
+  .badge-wrap { text-align: right; }
+  .badge-label { font-size: 10px; color: #6b7280; letter-spacing: 2px; text-transform: uppercase; }
+  .badge-val { font-size: 13px; font-weight: 500; color: var(--spun-green); margin-top: 2px; }
+
+  /* TABS */
+  .model-tabs { display: flex; gap: 8px; margin-bottom: 1.25rem; flex-wrap: wrap; }
+  .model-tab {
+    padding: 6px 16px; border-radius: 999px; font-size: 12px; font-weight: 500;
+    cursor: pointer; border: 1.5px solid var(--border2);
+    background: var(--surface); color: var(--text2);
+    transition: all 0.15s;
+  }
+  .model-tab.active { color: var(--spun-graphite); background: var(--spun-green); border-color: var(--spun-green); }
+  .model-tab:hover:not(.active) { color: var(--text); border-color: var(--border2); }
+
+  /* PANELS */
+  .panel {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+  }
+  .panel-title {
+    font-size: 10px; font-weight: 500; letter-spacing: 3px;
+    color: var(--text3); text-transform: uppercase; margin: 0 0 1rem;
+  }
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .mb { margin-bottom: 12px; }
+
+  /* FIELDS */
+  .field-row { margin-bottom: 1rem; }
+  .field-label { font-size: 12px; color: var(--text2); margin-bottom: 6px; display: flex; justify-content: space-between; }
+  .field-label span { font-weight: 500; color: var(--text); }
+  input[type=range] {
+    width: 100%; height: 4px; border-radius: 999px;
+    accent-color: var(--spun-green); cursor: pointer;
+  }
+
+  /* METRIC CARDS */
+  .metric-card { background: var(--surface2); border-radius: var(--radius-sm); padding: 0.875rem 1rem; }
+  .metric-label { font-size: 11px; color: var(--text3); margin: 0 0 6px; }
+  .metric-value { font-size: 22px; font-weight: 500; margin: 0; }
+  .green { color: #16a34a; }
+  .red { color: #dc2626; }
+  .amber { color: #d97706; }
+  .purple { color: var(--spun-purple); }
+  .blue { color: #2563eb; }
+
+  /* SCENARIOS */
+  .scenario-block { border-radius: var(--radius-sm); padding: 0.875rem 1rem 0.875rem 1.25rem; margin-bottom: 10px; border-left: 3px solid transparent; }
+  .scenario-block.good { background: #f0fdf4; border-color: #16a34a; }
+  .scenario-block.neutral { background: #fffbeb; border-color: #d97706; }
+  .scenario-block.bad { background: #fef2f2; border-color: #dc2626; }
+  @media (prefers-color-scheme: dark) {
+    .scenario-block.good { background: #052e16; }
+    .scenario-block.neutral { background: #1c1200; }
+    .scenario-block.bad { background: #1c0000; }
+  }
+  .scenario-title { font-size: 12px; font-weight: 500; margin: 0 0 8px; color: var(--text); }
+  .scenario-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .s-item-label { font-size: 10px; color: var(--text3); margin: 0 0 2px; }
+  .s-item-val { font-size: 14px; font-weight: 500; margin: 0; }
+
+  /* VIABILITY BAR */
+  .viability-label { font-size: 11px; color: var(--text3); margin: 0 0 4px; display: flex; justify-content: space-between; }
+  .bar-track { height: 6px; background: var(--border); border-radius: 999px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 999px; transition: width 0.3s; }
+
+  /* ALERTS */
+  .alert-box { border-radius: var(--radius-sm); padding: 0.75rem 1rem; font-size: 12px; margin-top: 10px; display: flex; gap: 8px; align-items: flex-start; }
+  .alert-box i { flex-shrink: 0; margin-top: 1px; }
+  .alert-box.warn { background: #fffbeb; color: #92400e; }
+  .alert-box.ok { background: #f0fdf4; color: #14532d; }
+  .alert-box.danger { background: #fef2f2; color: #7f1d1d; }
+  @media (prefers-color-scheme: dark) {
+    .alert-box.warn { background: #1c1200; color: #fcd34d; }
+    .alert-box.ok { background: #052e16; color: #86efac; }
+    .alert-box.danger { background: #1c0000; color: #fca5a5; }
+  }
+
+  /* ESCALA TABLE */
+  .escala-row { display: grid; grid-template-columns: 80px 1fr 90px 90px 90px; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 0.5px solid var(--border); font-size: 12px; }
+  .escala-row.header { font-size: 10px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+
+  .hidden { display: none; }
+
+  @media (max-width: 600px) {
+    .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+    .scenario-grid { grid-template-columns: 1fr; }
+    .escala-row { grid-template-columns: 60px 1fr 70px 70px 60px; font-size: 11px; }
+  }
+
+  footer { margin-top: 2rem; text-align: center; font-size: 11px; color: var(--text3); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="sim-header">
+    <div class="sim-logo"></div>
+    <div class="sim-header-text">
+      <h1>Spun Mídia</h1>
+      <p>Simulador de Modelos de Negócio — Performance Media</p>
+    </div>
+    <div class="badge-wrap">
+      <div class="badge-label">Modelo ativo</div>
+      <div class="badge-val" id="modelo-ativo-badge">Tripartite</div>
+    </div>
+  </div>
+
+  <div class="model-tabs">
+    <button class="model-tab active" onclick="setModel('tripartite')">01 Tripartite</button>
+    <button class="model-tab" onclick="setModel('floor')">02 Floor / Ceiling</button>
+    <button class="model-tab" onclick="setModel('revshare')">02b Rev Share</button>
+    <button class="model-tab" onclick="setModel('escala')">02c CPA Escalonado</button>
+    <button class="model-tab" onclick="setModel('creative')">03 Performance Creative</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- MODELO 01 — TRIPARTITE                    -->
+  <!-- ══════════════════════════════════════════ -->
+  <div id="model-tripartite">
+    <div class="grid-2 mb">
+      <div class="panel">
+        <div class="panel-title">Produto &amp; Margem</div>
+        <div class="field-row">
+          <div class="field-label">Ticket médio do produto <span id="t-ticket-v">R$ 400</span></div>
+          <input type="range" min="50" max="5000" step="10" value="400" id="t-ticket" oninput="calcTripartite()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">Margem de contribuição <span id="t-margem-v">50%</span></div>
+          <input type="range" min="10" max="90" value="50" id="t-margem" oninput="calcTripartite()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">Conversões estimadas/mês <span id="t-conv-v">100</span></div>
+          <input type="range" min="10" max="2000" step="10" value="100" id="t-conv" oninput="calcTripartite()">
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Custos da Operação</div>
+        <div class="field-row">
+          <div class="field-label">Ad spend (% do ticket) <span id="t-adspend-v">15%</span></div>
+          <input type="range" min="5" max="50" value="15" id="t-adspend" oninput="calcTripartite()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">Fee Spun (% do ticket) <span id="t-fee-v">8%</span></div>
+          <input type="range" min="2" max="25" value="8" id="t-fee" oninput="calcTripartite()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">Fee Criador (% do ticket) <span id="t-criador-v">12%</span></div>
+          <input type="range" min="2" max="30" value="12" id="t-criador" oninput="calcTripartite()">
+        </div>
+      </div>
+    </div>
+    <div class="grid-4 mb">
+      <div class="metric-card"><p class="metric-label">CPA Total da Operação</p><p class="metric-value blue" id="t-cpa-total">—</p></div>
+      <div class="metric-card"><p class="metric-label">Margem Spun / venda</p><p class="metric-value green" id="t-margem-spun">—</p></div>
+      <div class="metric-card"><p class="metric-label">Margem Residual Parceiro</p><p class="metric-value" id="t-margem-parceiro">—</p></div>
+      <div class="metric-card"><p class="metric-label">Receita Spun (mês)</p><p class="metric-value purple" id="t-receita-spun">—</p></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Análise de Viabilidade</div>
+      <div class="viability-label"><span>CPA vs. Margem disponível</span><span id="t-pct-label">—</span></div>
+      <div class="bar-track"><div class="bar-fill" id="t-bar" style="width:0%;background:#16a34a;"></div></div>
+      <div id="t-alert" class="alert-box ok"><i class="ti ti-check"></i><span id="t-alert-txt">Calculando...</span></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- MODELO 02 — FLOOR / CEILING               -->
+  <!-- ══════════════════════════════════════════ -->
+  <div id="model-floor" class="hidden">
+    <div class="grid-2 mb">
+      <div class="panel">
+        <div class="panel-title">Contexto do Parceiro</div>
+        <div class="field-row">
+          <div class="field-label">CPA histórico do parceiro <span id="f-historico-v">R$ 150</span></div>
+          <input type="range" min="30" max="1000" step="5" value="150" id="f-historico" oninput="calcFloor()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">Floor (mínimo que o parceiro paga) <span id="f-floor-v">R$ 100</span></div>
+          <input type="range" min="20" max="900" step="5" value="100" id="f-floor" oninput="calcFloor()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">Conversões estimadas/mês <span id="f-conv-v">100</span></div>
+          <input type="range" min="10" max="2000" step="10" value="100" id="f-conv" oninput="calcFloor()">
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Cenário de Performance da Spun</div>
+        <div class="field-row">
+          <div class="field-label">CPA real que a Spun está pagando <span id="f-real-v">R$ 90</span></div>
+          <input type="range" min="10" max="1200" step="5" value="90" id="f-real" oninput="calcFloor()">
+        </div>
+        <p style="font-size:12px;color:var(--text3);line-height:1.6;margin-top:8px;">Mova o slider de CPA real para simular diferentes performances de campanha. O ceiling é sempre o CPA histórico do parceiro — ele nunca paga mais do que pagava antes.</p>
+      </div>
+    </div>
+    <div class="panel mb">
+      <div class="panel-title">Três Cenários</div>
+      <div class="scenario-block good" id="f-scen-a">
+        <div class="scenario-title">Cenário A — Spun performa acima da meta</div>
+        <div class="scenario-grid">
+          <div><p class="s-item-label">CPA real (Spun pagou)</p><p class="s-item-val green" id="f-sa-real">—</p></div>
+          <div><p class="s-item-label">Parceiro paga</p><p class="s-item-val" id="f-sa-paga">—</p></div>
+          <div><p class="s-item-label">Margem Spun / venda</p><p class="s-item-val green" id="f-sa-margem">—</p></div>
+        </div>
+      </div>
+      <div class="scenario-block neutral">
+        <div class="scenario-title">Cenário B — Spun performa na média (CPA = histórico)</div>
+        <div class="scenario-grid">
+          <div><p class="s-item-label">CPA real</p><p class="s-item-val amber" id="f-sb-real">—</p></div>
+          <div><p class="s-item-label">Parceiro paga</p><p class="s-item-val" id="f-sb-paga">—</p></div>
+          <div><p class="s-item-label">Margem Spun</p><p class="s-item-val amber" id="f-sb-margem">R$ 0</p></div>
+        </div>
+      </div>
+      <div class="scenario-block bad">
+        <div class="scenario-title">Cenário C — Spun não performa (CPA = 120% do histórico)</div>
+        <div class="scenario-grid">
+          <div><p class="s-item-label">CPA real</p><p class="s-item-val red" id="f-sc-real">—</p></div>
+          <div><p class="s-item-label">Parceiro paga</p><p class="s-item-val" id="f-sc-paga">—</p></div>
+          <div><p class="s-item-label">Margem Spun</p><p class="s-item-val red" id="f-sc-margem">—</p></div>
+        </div>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="metric-card"><p class="metric-label">Receita Spun — Cenário A (mês)</p><p class="metric-value green" id="f-receita-a">—</p></div>
+      <div class="metric-card"><p class="metric-label">Receita Spun — Cenário B (mês)</p><p class="metric-value amber" id="f-receita-b">R$ 0</p></div>
+      <div class="metric-card"><p class="metric-label">Exposição máxima — Cenário C</p><p class="metric-value red" id="f-exposicao">—</p></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- MODELO 02b — REV SHARE                    -->
+  <!-- ══════════════════════════════════════════ -->
+  <div id="model-revshare" class="hidden">
+    <div class="grid-2 mb">
+      <div class="panel">
+        <div class="panel-title">Produto &amp; Volume</div>
+        <div class="field-row">
+          <div class="field-label">Ticket médio <span id="r-ticket-v">R$ 400</span></div>
+          <input type="range" min="50" max="5000" step="10" value="400" id="r-ticket" oninput="calcRevshare()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">Conversões estimadas/mês <span id="r-conv-v">100</span></div>
+          <input type="range" min="10" max="2000" step="10" value="100" id="r-conv" oninput="calcRevshare()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">Ad spend real da Spun <span id="r-adspend-v">R$ 7.000</span></div>
+          <input type="range" min="500" max="200000" step="500" value="7000" id="r-adspend" oninput="calcRevshare()">
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Parâmetros do Rev Share</div>
+        <div class="field-row">
+          <div class="field-label">% da receita acordado com parceiro <span id="r-pct-v">20%</span></div>
+          <input type="range" min="5" max="50" value="20" id="r-pct" oninput="calcRevshare()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">% do rev share destinado ao criador <span id="r-criador-pct-v">0%</span></div>
+          <input type="range" min="0" max="50" value="0" id="r-criador-pct" oninput="calcRevshare()">
+        </div>
+      </div>
+    </div>
+    <div class="grid-4 mb">
+      <div class="metric-card"><p class="metric-label">Receita total do canal (mês)</p><p class="metric-value blue" id="r-receita-total">—</p></div>
+      <div class="metric-card"><p class="metric-label">Rev share bruto (Spun)</p><p class="metric-value" id="r-revshare-bruto">—</p></div>
+      <div class="metric-card"><p class="metric-label">Margem líquida Spun</p><p class="metric-value green" id="r-margem-liquida">—</p></div>
+      <div class="metric-card"><p class="metric-label">ROAS da operação</p><p class="metric-value purple" id="r-roas">—</p></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Viabilidade do Modelo</div>
+      <div id="r-alert" class="alert-box ok"><i class="ti ti-check"></i><span id="r-alert-txt">Calculando...</span></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- MODELO 02c — CPA ESCALONADO               -->
+  <!-- ══════════════════════════════════════════ -->
+  <div id="model-escala" class="hidden">
+    <div class="grid-2 mb">
+      <div class="panel">
+        <div class="panel-title">Tabela de CPAs por Faixa</div>
+        <div class="field-row">
+          <div class="field-label">CPA Faixa 1 (1–50 conv.) <span id="e-cpa1-v">R$ 150</span></div>
+          <input type="range" min="20" max="1000" step="5" value="150" id="e-cpa1" oninput="calcEscala()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">CPA Faixa 2 (51–150 conv.) <span id="e-cpa2-v">R$ 130</span></div>
+          <input type="range" min="20" max="1000" step="5" value="130" id="e-cpa2" oninput="calcEscala()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">CPA Faixa 3 (151–300 conv.) <span id="e-cpa3-v">R$ 110</span></div>
+          <input type="range" min="20" max="1000" step="5" value="110" id="e-cpa3" oninput="calcEscala()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">CPA Faixa 4 (300+ conv.) <span id="e-cpa4-v">R$ 90</span></div>
+          <input type="range" min="20" max="1000" step="5" value="90" id="e-cpa4" oninput="calcEscala()">
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Volume do Mês</div>
+        <div class="field-row">
+          <div class="field-label">Conversões do mês <span id="e-conv-v">200</span></div>
+          <input type="range" min="1" max="500" step="1" value="200" id="e-conv" oninput="calcEscala()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">CPA real (custo da Spun) <span id="e-real-v">R$ 80</span></div>
+          <input type="range" min="10" max="500" step="5" value="80" id="e-real" oninput="calcEscala()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">Ticket médio <span id="e-ticket-v">R$ 400</span></div>
+          <input type="range" min="50" max="5000" step="10" value="400" id="e-ticket" oninput="calcEscala()">
+        </div>
+      </div>
+    </div>
+    <div class="panel mb">
+      <div class="panel-title">Tabela de Preços por Faixa</div>
+      <div class="escala-row header"><span>Faixa</span><span>Volume</span><span>CPA cobrado</span><span>Margem Spun</span><span>Status</span></div>
+      <div class="escala-row" id="e-row1"><span>Faixa 1</span><span>1–50 conv.</span><span id="e-r1-cpa">R$ 150</span><span id="e-r1-margem" class="green">—</span><span id="e-r1-status"></span></div>
+      <div class="escala-row" id="e-row2"><span>Faixa 2</span><span>51–150 conv.</span><span id="e-r2-cpa">R$ 130</span><span id="e-r2-margem" class="green">—</span><span id="e-r2-status"></span></div>
+      <div class="escala-row" id="e-row3"><span>Faixa 3</span><span>151–300 conv.</span><span id="e-r3-cpa">R$ 110</span><span id="e-r3-margem" class="green">—</span><span id="e-r3-status"></span></div>
+      <div class="escala-row" id="e-row4"><span>Faixa 4</span><span>300+ conv.</span><span id="e-r4-cpa">R$ 90</span><span id="e-r4-margem" class="green">—</span><span id="e-r4-status"></span></div>
+    </div>
+    <div class="grid-3">
+      <div class="metric-card"><p class="metric-label">Faixa ativa este mês</p><p class="metric-value blue" id="e-faixa-ativa">—</p></div>
+      <div class="metric-card"><p class="metric-label">Receita total Spun (mês)</p><p class="metric-value green" id="e-receita-spun">—</p></div>
+      <div class="metric-card"><p class="metric-label">Próxima faixa</p><p class="metric-value amber" id="e-proxima">—</p></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════ -->
+  <!-- MODELO 03 — PERFORMANCE CREATIVE          -->
+  <!-- ══════════════════════════════════════════ -->
+  <div id="model-creative" class="hidden">
+    <div class="grid-2 mb">
+      <div class="panel">
+        <div class="panel-title">Produto do Cliente</div>
+        <div class="field-row">
+          <div class="field-label">Ad spend mensal do cliente <span id="c-adspend-v">R$ 30.000</span></div>
+          <input type="range" min="1000" max="500000" step="1000" value="30000" id="c-adspend" oninput="calcCreative()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">ROAS atual (sem Spun) <span id="c-roas-v">3.0x</span></div>
+          <input type="range" min="1" max="20" step="0.5" value="3" id="c-roas" oninput="calcCreative()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">Melhoria esperada de ROAS <span id="c-melhoria-v">+30%</span></div>
+          <input type="range" min="5" max="100" value="30" id="c-melhoria" oninput="calcCreative()">
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">Modelo de Precificação Spun</div>
+        <div class="field-row">
+          <div class="field-label">Fee base mensal <span id="c-fee-v">R$ 8.000</span></div>
+          <input type="range" min="1000" max="50000" step="500" value="8000" id="c-fee" oninput="calcCreative()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">Bônus se ROAS ≥ meta <span id="c-bonus-v">R$ 3.000</span></div>
+          <input type="range" min="0" max="30000" step="500" value="3000" id="c-bonus" oninput="calcCreative()">
+        </div>
+        <div class="field-row">
+          <div class="field-label">Variações criativas/semana <span id="c-criativos-v">4</span></div>
+          <input type="range" min="1" max="15" value="4" id="c-criativos" oninput="calcCreative()">
+        </div>
+      </div>
+    </div>
+    <div class="grid-4 mb">
+      <div class="metric-card"><p class="metric-label">Receita cliente (atual)</p><p class="metric-value" id="c-receita-atual">—</p></div>
+      <div class="metric-card"><p class="metric-label">Receita cliente (com Spun)</p><p class="metric-value green" id="c-receita-nova">—</p></div>
+      <div class="metric-card"><p class="metric-label">Ganho incremental cliente</p><p class="metric-value green" id="c-ganho">—</p></div>
+      <div class="metric-card"><p class="metric-label">Receita máx. Spun (mês)</p><p class="metric-value purple" id="c-receita-spun">—</p></div>
+    </div>
+    <div class="panel">
+      <div class="panel-title">Valor Gerado vs. Fee Cobrado</div>
+      <div class="viability-label"><span>Fee Spun como % do ganho incremental do cliente</span><span id="c-pct-label">—</span></div>
+      <div class="bar-track"><div class="bar-fill" id="c-bar" style="width:0%;background:#16a34a;"></div></div>
+      <div id="c-alert" class="alert-box ok" style="margin-top:10px;"><i class="ti ti-check"></i><span id="c-alert-txt">Calculando...</span></div>
+    </div>
+  </div>
+
+  <footer>Spun Mídia &mdash; Simulador de Modelos de Negócio &mdash; Uso interno</footer>
+</div>
+
+<script>
+const brl = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+const pct = v => Math.round(v) + '%';
+
+function setModel(m) {
+  const models = ['tripartite','floor','revshare','escala','creative'];
+  const labels = { tripartite:'Tripartite', floor:'Floor / Ceiling', revshare:'Rev Share', escala:'CPA Escalonado', creative:'Performance Creative' };
+  models.forEach(id => document.getElementById('model-'+id).classList.toggle('hidden', id !== m));
+  document.querySelectorAll('.model-tab').forEach((btn,i) => btn.classList.toggle('active', models[i] === m));
+  document.getElementById('modelo-ativo-badge').textContent = labels[m];
+}
+
+function calcTripartite() {
+  const ticket = +document.getElementById('t-ticket').value;
+  const margem = +document.getElementById('t-margem').value/100;
+  const conv = +document.getElementById('t-conv').value;
+  const adspendPct = +document.getElementById('t-adspend').value/100;
+  const feePct = +document.getElementById('t-fee').value/100;
+  const criadorPct = +document.getElementById('t-criador').value/100;
+
+  document.getElementById('t-ticket-v').textContent = brl(ticket);
+  document.getElementById('t-margem-v').textContent = pct(margem*100);
+  document.getElementById('t-conv-v').textContent = conv;
+  document.getElementById('t-adspend-v').textContent = pct(adspendPct*100);
+  document.getElementById('t-fee-v').textContent = pct(feePct*100);
+  document.getElementById('t-criador-v').textContent = pct(criadorPct*100);
+
+  const margemBruta = ticket*margem;
+  const cpaTotal = (adspendPct+feePct+criadorPct)*ticket;
+  const feeVal = ticket*feePct;
+  const residual = margemBruta-cpaTotal;
+
+  document.getElementById('t-cpa-total').textContent = brl(cpaTotal);
+  document.getElementById('t-margem-spun').textContent = brl(feeVal);
+  document.getElementById('t-margem-spun').className = 'metric-value '+(feeVal>0?'green':'red');
+  document.getElementById('t-margem-parceiro').textContent = brl(residual);
+  document.getElementById('t-margem-parceiro').className = 'metric-value '+(residual>0?'green':'red');
+  document.getElementById('t-receita-spun').textContent = brl(feeVal*conv);
+
+  const util = margemBruta>0 ? Math.min((cpaTotal/margemBruta)*100,100) : 100;
+  const bc = util<70?'#16a34a':util<90?'#d97706':'#dc2626';
+  document.getElementById('t-bar').style.width = util.toFixed(0)+'%';
+  document.getElementById('t-bar').style.background = bc;
+  document.getElementById('t-pct-label').textContent = util.toFixed(0)+'% da margem consumida';
+
+  const al = document.getElementById('t-alert');
+  const at = document.getElementById('t-alert-txt');
+  if (residual<0) {
+    al.className='alert-box danger'; al.querySelector('i').className='ti ti-alert-triangle';
+    at.textContent='Inviável: CPA total ('+brl(cpaTotal)+') supera a margem disponível ('+brl(margemBruta)+'). Reduza os custos ou aumente o ticket.';
+  } else if (residual<margemBruta*0.15) {
+    al.className='alert-box warn'; al.querySelector('i').className='ti ti-alert-circle';
+    at.textContent='Margem apertada: parceiro retém apenas '+brl(residual)+'/venda. Renegociar fee de criador ou ad spend antes de escalar.';
+  } else {
+    al.className='alert-box ok'; al.querySelector('i').className='ti ti-check';
+    at.textContent='Viável: parceiro retém '+brl(residual)+'/venda, Spun fatura '+brl(feeVal*conv)+'/mês com '+conv+' conversões.';
+  }
+}
+
+function calcFloor() {
+  const historico = +document.getElementById('f-historico').value;
+  const floor = +document.getElementById('f-floor').value;
+  const real = +document.getElementById('f-real').value;
+  const conv = +document.getElementById('f-conv').value;
+
+  document.getElementById('f-historico-v').textContent = brl(historico);
+  document.getElementById('f-floor-v').textContent = brl(floor);
+  document.getElementById('f-real-v').textContent = brl(real);
+  document.getElementById('f-conv-v').textContent = conv;
+
+  const ceiling = historico;
+  const saReal=real, saPaga=Math.max(floor,real), saMargem=saPaga-saReal;
+  const scReal=historico*1.2, scPaga=ceiling, scMargem=scPaga-scReal;
+
+  document.getElementById('f-sa-real').textContent = brl(saReal);
+  document.getElementById('f-sa-paga').textContent = brl(saPaga);
+  document.getElementById('f-sa-margem').textContent = (saMargem>=0?'+':'')+brl(saMargem);
+  document.getElementById('f-sa-margem').style.color = saMargem>=0?'#16a34a':'#dc2626';
+  document.getElementById('f-scen-a').className = 'scenario-block '+(saMargem>=0?'good':'bad');
+
+  document.getElementById('f-sb-real').textContent = brl(historico);
+  document.getElementById('f-sb-paga').textContent = brl(historico);
+
+  document.getElementById('f-sc-real').textContent = brl(scReal);
+  document.getElementById('f-sc-paga').textContent = brl(scPaga);
+  document.getElementById('f-sc-margem').textContent = brl(scMargem);
+
+  document.getElementById('f-receita-a').textContent = brl(saMargem*conv);
+  document.getElementById('f-exposicao').textContent = brl(Math.abs(scMargem)*conv);
+}
+
+function calcRevshare() {
+  const ticket = +document.getElementById('r-ticket').value;
+  const conv = +document.getElementById('r-conv').value;
+  const adspend = +document.getElementById('r-adspend').value;
+  const pctR = +document.getElementById('r-pct').value/100;
+  const pctC = +document.getElementById('r-criador-pct').value/100;
+
+  document.getElementById('r-ticket-v').textContent = brl(ticket);
+  document.getElementById('r-conv-v').textContent = conv;
+  document.getElementById('r-adspend-v').textContent = brl(adspend);
+  document.getElementById('r-pct-v').textContent = pct(pctR*100);
+  document.getElementById('r-criador-pct-v').textContent = pct(pctC*100);
+
+  const recTotal = ticket*conv;
+  const rsB = recTotal*pctR;
+  const criadorP = rsB*pctC;
+  const margem = rsB-criadorP-adspend;
+  const roas = adspend>0?(rsB/adspend):0;
+
+  document.getElementById('r-receita-total').textContent = brl(recTotal);
+  document.getElementById('r-revshare-bruto').textContent = brl(rsB);
+  document.getElementById('r-margem-liquida').textContent = brl(margem);
+  document.getElementById('r-margem-liquida').className = 'metric-value '+(margem>=0?'green':'red');
+  document.getElementById('r-roas').textContent = roas.toFixed(1)+'x';
+
+  const al=document.getElementById('r-alert'), at=document.getElementById('r-alert-txt');
+  if (margem<0) {
+    al.className='alert-box danger'; al.querySelector('i').className='ti ti-alert-triangle';
+    at.textContent='Ad spend ('+brl(adspend)+') supera o rev share recebido ('+brl(rsB)+'). Aumente o % ou reduza o investimento.';
+  } else if (roas<1.5) {
+    al.className='alert-box warn'; al.querySelector('i').className='ti ti-alert-circle';
+    at.textContent='ROAS abaixo de 1.5x — operação no limite. Recomendável adicionar um fee mínimo que cubra o ad spend.';
+  } else {
+    al.className='alert-box ok'; al.querySelector('i').className='ti ti-check';
+    at.textContent='ROAS de '+roas.toFixed(1)+'x. Margem líquida da Spun: '+brl(margem)+'/mês. Modelo sustentável com tracking auditável.';
+  }
+}
+
+function calcEscala() {
+  const cpas = [+document.getElementById('e-cpa1').value,+document.getElementById('e-cpa2').value,+document.getElementById('e-cpa3').value,+document.getElementById('e-cpa4').value];
+  const conv = +document.getElementById('e-conv').value;
+  const real = +document.getElementById('e-real').value;
+
+  ['e-cpa1-v','e-cpa2-v','e-cpa3-v','e-cpa4-v'].forEach((id,i)=>document.getElementById(id).textContent=brl(cpas[i]));
+  document.getElementById('e-conv-v').textContent = conv;
+  document.getElementById('e-real-v').textContent = brl(real);
+  document.getElementById('e-ticket-v').textContent = brl(+document.getElementById('e-ticket').value);
+
+  const ranges = [[1,50],[51,150],[151,300],[301,Infinity]];
+  let activeIdx = 0;
+  ranges.forEach((r,i)=>{ if(conv>=r[0]) activeIdx=i; });
+
+  [1,2,3,4].forEach((n,i)=>{
+    const m = cpas[i]-real;
+    document.getElementById('e-r'+n+'-cpa').textContent = brl(cpas[i]);
+    document.getElementById('e-r'+n+'-margem').textContent = (m>=0?'+':'')+brl(m);
+    document.getElementById('e-r'+n+'-margem').style.color = m>=0?'#16a34a':'#dc2626';
+    document.getElementById('e-r'+n+'-status').textContent = i===activeIdx?'← Ativa':'';
+    document.getElementById('e-row'+n).style.background = i===activeIdx?'rgba(37,99,235,0.07)':'';
+  });
+
+  const receitaSpun = (cpas[activeIdx]-real)*conv;
+  document.getElementById('e-faixa-ativa').textContent = 'Faixa '+(activeIdx+1)+' ('+brl(cpas[activeIdx])+'/conv)';
+  document.getElementById('e-receita-spun').textContent = brl(receitaSpun);
+  document.getElementById('e-receita-spun').className = 'metric-value '+(receitaSpun>=0?'green':'red');
+
+  const nextIdx = ranges.findIndex((r,i)=>i>activeIdx);
+  if (nextIdx>=0) {
+    document.getElementById('e-proxima').textContent = 'A partir de '+ranges[nextIdx][0]+' conv. → '+brl(cpas[nextIdx])+'/conv.';
+  } else {
+    document.getElementById('e-proxima').textContent = 'Já na faixa máxima';
+  }
+}
+
+function calcCreative() {
+  const adspend = +document.getElementById('c-adspend').value;
+  const roas = +document.getElementById('c-roas').value;
+  const melhoria = +document.getElementById('c-melhoria').value/100;
+  const fee = +document.getElementById('c-fee').value;
+  const bonus = +document.getElementById('c-bonus').value;
+  const criativos = +document.getElementById('c-criativos').value;
+
+  document.getElementById('c-adspend-v').textContent = brl(adspend);
+  document.getElementById('c-roas-v').textContent = roas.toFixed(1)+'x';
+  document.getElementById('c-melhoria-v').textContent = '+'+pct(melhoria*100);
+  document.getElementById('c-fee-v').textContent = brl(fee);
+  document.getElementById('c-bonus-v').textContent = brl(bonus);
+  document.getElementById('c-criativos-v').textContent = criativos;
+
+  const recAtual = adspend*roas;
+  const recNova = adspend*roas*(1+melhoria);
+  const ganho = recNova-recAtual;
+  const recSpun = fee+bonus;
+
+  document.getElementById('c-receita-atual').textContent = brl(recAtual);
+  document.getElementById('c-receita-nova').textContent = brl(recNova);
+  document.getElementById('c-ganho').textContent = '+'+brl(ganho);
+  document.getElementById('c-receita-spun').textContent = brl(recSpun);
+
+  const fp = ganho>0?Math.min((recSpun/ganho)*100,100):100;
+  const bc = fp<25?'#16a34a':fp<50?'#d97706':'#dc2626';
+  document.getElementById('c-bar').style.width = fp.toFixed(0)+'%';
+  document.getElementById('c-bar').style.background = bc;
+  document.getElementById('c-pct-label').textContent = fp.toFixed(0)+'% do ganho incremental';
+
+  const al=document.getElementById('c-alert'), at=document.getElementById('c-alert-txt');
+  if (fp>80) {
+    al.className='alert-box danger'; al.querySelector('i').className='ti ti-alert-triangle';
+    at.textContent='Fee Spun ('+brl(recSpun)+') representa mais de 80% do ganho projetado. Rever precificação antes de apresentar ao cliente.';
+  } else if (fp>40) {
+    al.className='alert-box warn'; al.querySelector('i').className='ti ti-alert-circle';
+    at.textContent='Fee moderado: argumento de venda — cada R$ 1 em fee gera R$ '+(ganho/recSpun).toFixed(1)+' de receita adicional ao cliente.';
+  } else {
+    al.className='alert-box ok'; al.querySelector('i').className='ti ti-check';
+    at.textContent='Fee justo: cliente ganha '+brl(ganho)+'/mês, paga '+brl(recSpun)+'. ROI para o cliente: '+(ganho/recSpun).toFixed(1)+'x sobre o investimento na Spun.';
+  }
+}
+
+calcTripartite(); calcFloor(); calcRevshare(); calcEscala(); calcCreative();
+</script>
+</body>
+</html>
