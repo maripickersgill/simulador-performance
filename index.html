@@ -409,60 +409,6 @@ input[type=range]::-moz-range-thumb {
 /* ── DIVIDER ──────────────────────────────────── */
 .divider { height: 1px; background: var(--border); margin: 28px 0; }
 
-.field-hint {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-top: 5px;
-  line-height: 1.5;
-}
-
-/* ── PAYOFF MATRIX ────────────────────────────── */
-.payoff-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-}
-.payoff-table th {
-  padding: 10px 14px;
-  text-align: center;
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border);
-}
-.payoff-table th span { display:block; font-size:10px; font-weight:400; color:var(--text-muted); text-transform:none; letter-spacing:0; margin-top:2px; }
-.payoff-table th:first-child { text-align:left; }
-.payoff-table td {
-  padding: 13px 14px;
-  text-align: center;
-  border-bottom: 1px solid var(--border);
-  font-family: var(--mono);
-  font-size: 13px;
-  color: var(--text-secondary);
-}
-.payoff-table td:first-child { text-align:left; font-family:var(--font); color:var(--text-primary); font-size:12px; }
-.payoff-table tr:last-child td { border-bottom: none; }
-.payoff-table tr.dominant-row td { background: rgba(57,255,20,0.05); }
-.payoff-table tr.dominant-row td:first-child { color: var(--green); }
-.col-pess { color: #ff5555 !important; }
-.col-real { color: var(--text-secondary) !important; }
-.col-otim { color: #60a5fa !important; }
-.col-esp { color: var(--text-primary) !important; }
-.col-regret { color: #f59e0b !important; }
-.dominant-badge {
-  display:inline-block;
-  background: rgba(57,255,20,0.15);
-  color: var(--green);
-  font-size:10px;
-  padding:2px 8px;
-  border-radius:999px;
-  font-family: var(--font);
-  font-weight:500;
-  margin-left:6px;
-}
-
 /* ── CONVERSÕES SECTION ──────────────────────── */
 .plat-btn {
   background: var(--graphite3);
@@ -581,15 +527,6 @@ input[type=range]::-moz-range-thumb {
       <span class="nav-num">03</span>
       <span class="nav-dot"></span>
       Performance Creative
-    </button>
-  </div>
-
-  <div class="sidebar-section">
-    <div class="sidebar-section-label">Previsibilidade</div>
-    <button class="nav-item" onclick="showSection('prev')">
-      <span class="nav-num">↗</span>
-      <span class="nav-dot"></span>
-      Teoria dos Jogos
     </button>
   </div>
 
@@ -1139,173 +1076,6 @@ input[type=range]::-moz-range-thumb {
       </div>
     </div>
 
-    <!-- ══════════════════════════════════════════ -->
-    <!-- PREVISIBILIDADE — TEORIA DOS JOGOS         -->
-    <!-- ══════════════════════════════════════════ -->
-    <div class="section" id="sec-prev">
-      <div class="section-intro">
-        <div class="section-tag">
-          <span class="section-tag-dot" style="background:#f59e0b"></span>
-          Previsibilidade
-        </div>
-        <h2 class="section-h">Mídia Paga &amp; Teoria dos Jogos</h2>
-        <p class="section-desc">Planilhas de média escondem variância. Esse simulador usa lógica de <strong style="color:var(--text-primary)">minimax regret</strong> — você vê o que acontece em cada cruzamento de estratégia × cenário de mercado, e a estratégia dominante é aquela com menor arrependimento no pior caso, não só o maior retorno no otimista.</p>
-      </div>
-
-      <!-- INPUTS -->
-      <div class="grid-2 mb24">
-        <div class="panel">
-          <div class="panel-label">Parâmetros do Produto</div>
-
-          <div class="field">
-            <div class="field-header"><span class="field-label">Ticket médio</span><span class="field-val c-green" id="pv-ticket-v">R$ 300</span></div>
-            <input type="range" min="30" max="5000" step="10" value="300" id="pv-ticket" oninput="calcPV()">
-            <div class="field-hint">Valor que o cliente paga por cada venda / conversão.</div>
-          </div>
-
-          <div class="field">
-            <div class="field-header"><span class="field-label">Margem bruta</span><span class="field-val" id="pv-margem-v">60%</span></div>
-            <input type="range" min="10" max="95" value="60" id="pv-margem" oninput="calcPV()">
-            <div class="field-hint">% do ticket que sobra após custos do produto. Infoproduto: 70–90%. Físico: 30–60%.</div>
-          </div>
-
-          <div class="field">
-            <div class="field-header"><span class="field-label">Investimento base / mês</span><span class="field-val" id="pv-inv-v">R$ 5.000</span></div>
-            <input type="range" min="500" max="200000" step="500" value="5000" id="pv-inv" oninput="calcPV()">
-            <div class="field-hint">O valor que você considera o ponto de partida realista. A matriz vai testar 50%, 100% e 200% desse valor.</div>
-          </div>
-
-          <!-- TOGGLE CUSTOS FIXOS -->
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:12px 14px;background:var(--graphite3);border-radius:var(--radius-sm);cursor:pointer;" onclick="toggleFixo()" id="fixo-toggle-row">
-            <div id="fixo-toggle-pill" style="width:34px;height:18px;border-radius:999px;background:var(--graphite5);position:relative;transition:background 0.2s;flex-shrink:0;">
-              <div id="fixo-toggle-thumb" style="position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--text-muted);transition:all 0.2s;"></div>
-            </div>
-            <span style="font-size:12px;color:var(--text-secondary);">Incluir custos fixos no breakeven</span>
-          </div>
-          <div id="fixo-wrap" style="display:none;">
-            <div class="field">
-              <div class="field-header"><span class="field-label">Custos fixos mensais</span><span class="field-val" id="pv-fixo-v">R$ 500</span></div>
-              <input type="range" min="0" max="20000" step="100" value="500" id="pv-fixo" oninput="calcPV()">
-              <div class="field-hint">Mensalidades de ferramentas, landing page, e-mail marketing — o que você paga mesmo sem vender.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="panel">
-          <div class="panel-label">Parâmetros de Campanha</div>
-
-          <div class="field">
-            <div class="field-header"><span class="field-label">CPM médio estimado</span><span class="field-val" id="pv-cpm-v">R$ 15</span></div>
-            <input type="range" min="2" max="100" step="1" value="15" id="pv-cpm" oninput="calcPV()">
-            <div class="field-hint">Custo por mil impressões. Meta Feed/Reels: R$ 8–25 · Google Display: R$ 4–15 · TikTok: R$ 10–30 · LinkedIn: R$ 40–80.</div>
-          </div>
-
-          <div class="field">
-            <div class="field-header"><span class="field-label">CTR — taxa de clique</span><span class="field-val" id="pv-ctr-v">2%</span></div>
-            <input type="range" min="0.1" max="15" step="0.1" value="2" id="pv-ctr" oninput="calcPV()">
-            <div class="field-hint">% das impressões que viram clique. Meta/Instagram: 1–3% · Google Search: 3–8% · Display: 0,3–1%.</div>
-          </div>
-
-          <div class="field">
-            <div class="field-header"><span class="field-label">CVR — taxa de conversão</span><span class="field-val" id="pv-cvr-v">2%</span></div>
-            <input type="range" min="0.1" max="30" step="0.1" value="2" id="pv-cvr" oninput="calcPV()">
-            <div class="field-hint">Clique → venda/lead. Captura de lead: 20–50% · Venda até R$ 200: 1–3% · High ticket: 0,2–1% · App gaming: 6–12%.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- INDICADORES BASE -->
-      <div class="grid-4 mb24">
-        <div class="metric-card">
-          <div class="metric-label">ROAS base</div>
-          <div class="metric-value c-green" id="pv-roas">—</div>
-          <div class="metric-sub">receita ÷ investimento</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Receita projetada</div>
-          <div class="metric-value c-blue" id="pv-receita">—</div>
-          <div class="metric-sub">por mês</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Lucro / prejuízo</div>
-          <div class="metric-value" id="pv-lucro">—</div>
-          <div class="metric-sub">após investimento</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Vendas projetadas</div>
-          <div class="metric-value c-purple" id="pv-vendas">—</div>
-          <div class="metric-sub">conversões / mês</div>
-        </div>
-      </div>
-
-      <!-- BREAKEVEN BAR -->
-      <div class="panel mb24">
-        <div class="panel-label">Breakeven</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;">
-          <div>
-            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Vendas para breakeven</div>
-            <div style="font-family:var(--mono);font-size:20px;font-weight:500;" id="pv-be-vendas">—</div>
-          </div>
-          <div>
-            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Receita para breakeven</div>
-            <div style="font-family:var(--mono);font-size:20px;font-weight:500;" id="pv-be-receita">—</div>
-          </div>
-          <div>
-            <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px;">Cobertura atual</div>
-            <div style="font-family:var(--mono);font-size:20px;font-weight:500;" id="pv-be-pct">—</div>
-          </div>
-        </div>
-        <div class="bar-header"><span>Margem bruta gerada vs. custos totais</span><span id="pv-be-label">—</span></div>
-        <div class="bar-track"><div class="bar-fill" id="pv-be-bar" style="width:0%"></div></div>
-      </div>
-
-      <!-- MATRIZ DE PAYOFF -->
-      <div class="panel mb24">
-        <div class="panel-label">Matriz de Payoff — Estratégia × Cenário de Mercado</div>
-        <p style="font-size:12px;color:var(--text-muted);margin-bottom:20px;line-height:1.6;">Cruza três estratégias de investimento com três cenários de mercado. A célula <span style="color:var(--green);font-weight:500;">✦ Dominante</span> é a estratégia com melhor resultado esperado ponderado — e menor arrependimento no pior caso.</p>
-
-        <div style="overflow-x:auto;">
-          <table class="payoff-table" id="pv-matrix">
-            <thead>
-              <tr>
-                <th style="width:160px;">Estratégia</th>
-                <th class="col-pess">😰 Pessimista<br><span>CVR −50%, CPM +40%</span></th>
-                <th class="col-real">📊 Realista<br><span>Seus parâmetros</span></th>
-                <th class="col-otim">🚀 Otimista<br><span>CVR +50%, CPM −20%</span></th>
-                <th class="col-esp">Resultado<br><span>ponderado</span></th>
-                <th class="col-regret">Regret<br><span>máx.</span></th>
-              </tr>
-            </thead>
-            <tbody id="pv-matrix-body"></tbody>
-          </table>
-        </div>
-
-        <div style="margin-top:16px;padding:12px 16px;background:var(--graphite3);border-radius:var(--radius-sm);font-size:12px;color:var(--text-muted);line-height:1.7;">
-          <strong style="color:var(--text-secondary);">Como ler a matriz:</strong> cada célula mostra o lucro líquido naquele cruzamento. "Resultado ponderado" usa pesos 25% / 50% / 25% (pessimista / realista / otimista). "Regret máximo" é o quanto você perderia por não ter escolhido a melhor estratégia naquele cenário — quanto menor, mais segura a aposta.
-        </div>
-      </div>
-
-      <!-- TABELA BREAKEVEN POR VOLUME -->
-      <div class="panel">
-        <div class="panel-label">Breakeven por Nível de Investimento</div>
-        <p style="font-size:12px;color:var(--text-muted);margin-bottom:16px;">Quantas vendas você precisa para cobrir exatamente os custos em cada estratégia.</p>
-        <table class="escala-table" id="pv-be-table">
-          <thead>
-            <tr>
-              <th>Estratégia</th>
-              <th>Investimento</th>
-              <th>Custo total</th>
-              <th>Vendas p/ breakeven</th>
-              <th>Receita p/ breakeven</th>
-              <th>Vendas projetadas</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="pv-be-body"></tbody>
-        </table>
-      </div>
-    </div>
-
   </div><!-- /content -->
 </main>
 
@@ -1322,7 +1092,6 @@ const titles = {
   revshare: ['Rev Share', 'Modelo 02b'],
   escala: ['CPA Escalonado', 'Modelo 02c'],
   creative: ['Performance Creative', 'Modelo 03'],
-  prev: ['Previsibilidade de Mídia Paga', 'Teoria dos Jogos'],
 };
 
 function showSection(id) {
@@ -1335,7 +1104,6 @@ function showSection(id) {
   document.getElementById('topbar-title').textContent = titles[id][0];
   document.getElementById('topbar-model').textContent = titles[id][1];
   if (window.innerWidth <= 860) document.getElementById('sidebar').classList.remove('open');
-  if (id === 'prev') calcPV();
 }
 
 function toggleSidebar() {
@@ -1596,155 +1364,7 @@ function goToModel(id) {
   showSection(id);
 }
 
-// ── PREVISIBILIDADE — TEORIA DOS JOGOS ──────────
-let fixoOn = false;
-
-function toggleFixo() {
-  fixoOn = !fixoOn;
-  const pill = document.getElementById('fixo-toggle-pill');
-  const thumb = document.getElementById('fixo-toggle-thumb');
-  const wrap = document.getElementById('fixo-wrap');
-  pill.style.background = fixoOn ? 'var(--green)' : 'var(--graphite5)';
-  thumb.style.background = fixoOn ? 'var(--graphite)' : 'var(--text-muted)';
-  thumb.style.left = fixoOn ? '18px' : '2px';
-  wrap.style.display = fixoOn ? 'block' : 'none';
-  calcPV();
-}
-
-function calcPV() {
-  const ticket  = +document.getElementById('pv-ticket').value;
-  const margem  = +document.getElementById('pv-margem').value / 100;
-  const invBase = +document.getElementById('pv-inv').value;
-  const cpm     = +document.getElementById('pv-cpm').value;
-  const ctr     = +document.getElementById('pv-ctr').value / 100;
-  const cvr     = +document.getElementById('pv-cvr').value / 100;
-  const fixo    = fixoOn ? +document.getElementById('pv-fixo').value : 0;
-
-  document.getElementById('pv-ticket-v').textContent  = brl(ticket);
-  document.getElementById('pv-margem-v').textContent  = p(margem*100);
-  document.getElementById('pv-inv-v').textContent     = brl(invBase);
-  document.getElementById('pv-cpm-v').textContent     = brl(cpm);
-  document.getElementById('pv-ctr-v').textContent     = (ctr*100).toFixed(1)+'%';
-  document.getElementById('pv-cvr-v').textContent     = (cvr*100).toFixed(1)+'%';
-  if (fixoOn) document.getElementById('pv-fixo-v').textContent = brl(fixo);
-
-  // helper: given investment, cpm, ctr, cvr → compute metrics
-  function scenario(inv, scenCPM, scenCVR) {
-    const impressoes = (inv / scenCPM) * 1000;
-    const cliques    = impressoes * ctr;
-    const vendas     = cliques * scenCVR;
-    const receita    = vendas * ticket;
-    const margBruta  = receita * margem;
-    const custoTotal = inv + fixo;
-    const lucro      = margBruta - custoTotal;
-    const roas       = inv > 0 ? receita / inv : 0;
-    const cpa        = vendas > 0 ? inv / vendas : 0;
-    return { vendas, receita, margBruta, custoTotal, lucro, roas };
-  }
-
-  // Base scenario
-  const base = scenario(invBase, cpm, cvr);
-
-  // Indicators
-  document.getElementById('pv-roas').textContent    = base.roas.toFixed(2) + 'x';
-  document.getElementById('pv-roas').className      = 'metric-value ' + (base.roas >= 1 ? 'c-green' : 'c-red');
-  document.getElementById('pv-receita').textContent = brl(base.receita);
-  document.getElementById('pv-lucro').textContent   = (base.lucro >= 0 ? '+' : '') + brl(base.lucro);
-  document.getElementById('pv-lucro').className     = 'metric-value ' + (base.lucro >= 0 ? 'c-green' : 'c-red');
-  document.getElementById('pv-vendas').textContent  = Math.round(base.vendas).toLocaleString('pt-BR');
-
-  // Breakeven
-  const margUnit   = ticket * margem;
-  const custoTotal = invBase + fixo;
-  const beVendas   = margUnit > 0 ? Math.ceil(custoTotal / margUnit) : 0;
-  const beReceita  = beVendas * ticket;
-  const bePct      = base.margBruta > 0 ? Math.min((base.margBruta / custoTotal) * 100, 200) : 0;
-  const barPct     = Math.min(bePct, 100);
-  const barColor   = bePct >= 100 ? 'var(--green)' : bePct >= 70 ? '#f59e0b' : '#ff5555';
-
-  document.getElementById('pv-be-vendas').textContent  = beVendas.toLocaleString('pt-BR') + ' vendas';
-  document.getElementById('pv-be-receita').textContent = brl(beReceita);
-  document.getElementById('pv-be-pct').textContent     = bePct.toFixed(0) + '%';
-  document.getElementById('pv-be-pct').style.color     = barColor;
-  document.getElementById('pv-be-bar').style.cssText   = `width:${barPct}%;background:${barColor}`;
-  document.getElementById('pv-be-label').textContent   = bePct.toFixed(0) + '% coberto';
-
-  // ── PAYOFF MATRIX ──────────────────────────────
-  const strategies = [
-    { label: 'Conservador', inv: invBase * 0.5, desc: '50% do base' },
-    { label: 'Base',        inv: invBase,        desc: '100% — referência' },
-    { label: 'Agressivo',   inv: invBase * 2,    desc: '200% do base' },
-  ];
-  const scenarios_def = [
-    { key: 'pess', cpmMult: 1.4,  cvrMult: 0.5  },
-    { key: 'real', cpmMult: 1.0,  cvrMult: 1.0  },
-    { key: 'otim', cpmMult: 0.8,  cvrMult: 1.5  },
-  ];
-  const weights = [0.25, 0.50, 0.25];
-
-  // compute payoffs
-  const payoffs = strategies.map(st =>
-    scenarios_def.map(sc => scenario(st.inv, cpm * sc.cpmMult, cvr * sc.cvrMult).lucro)
-  );
-
-  // weighted expected value and max regret
-  const expected = payoffs.map(row => row.reduce((s, v, i) => s + v * weights[i], 0));
-
-  // max payoff per scenario column
-  const maxByScen = scenarios_def.map((_, si) => Math.max(...payoffs.map(row => row[si])));
-  const regrets   = payoffs.map(row => Math.max(...row.map((v, si) => maxByScen[si] - v)));
-
-  const dominantIdx = regrets.indexOf(Math.min(...regrets));
-
-  const tbody = document.getElementById('pv-matrix-body');
-  tbody.innerHTML = '';
-  strategies.forEach((st, ri) => {
-    const isDom = ri === dominantIdx;
-    const tr = document.createElement('tr');
-    if (isDom) tr.className = 'dominant-row';
-    const cells = [
-      `<td>${st.label} <span style="font-size:10px;color:var(--text-muted)">${st.desc}</span>${isDom ? '<span class="dominant-badge">✦ Dominante</span>' : ''}</td>`,
-      ...payoffs[ri].map((v, si) => {
-        const cls = si===0?'col-pess':si===1?'col-real':'col-otim';
-        const col = v >= 0 ? '#86efac' : '#fca5a5';
-        return `<td class="${cls}" style="color:${col}">${v>=0?'+':''}${brl(v)}</td>`;
-      }),
-      `<td class="col-esp" style="color:${expected[ri]>=0?'#86efac':'#fca5a5}">${expected[ri]>=0?'+':''}${brl(expected[ri])}</td>`,
-      `<td class="col-regret">${brl(regrets[ri])}</td>`,
-    ];
-    tr.innerHTML = cells.join('');
-    tbody.appendChild(tr);
-  });
-
-  // ── BREAKEVEN TABLE ────────────────────────────
-  const beTbody = document.getElementById('pv-be-body');
-  beTbody.innerHTML = '';
-  strategies.forEach((st, ri) => {
-    const isDom = ri === dominantIdx;
-    const real = scenario(st.inv, cpm, cvr);
-    const stFixo = st.inv + fixo;
-    const stBeVendas = margUnit > 0 ? Math.ceil(stFixo / margUnit) : 0;
-    const stBeReceita = stBeVendas * ticket;
-    const projVendas = Math.round(real.vendas);
-    const ok = projVendas >= stBeVendas;
-    const tr = document.createElement('tr');
-    if (isDom) tr.className = 'active-row';
-    tr.innerHTML = `
-      <td style="font-family:var(--font);color:${isDom?'var(--green)':'var(--text-secondary)'}">
-        ${st.label}${isDom?'<span class="active-badge" style="margin-left:6px">✦</span>':''}
-      </td>
-      <td>${brl(st.inv)}</td>
-      <td>${brl(stFixo)}</td>
-      <td style="color:var(--text-primary)">${stBeVendas.toLocaleString('pt-BR')}</td>
-      <td>${brl(stBeReceita)}</td>
-      <td style="color:${ok?'#86efac':'#fca5a5'}">${projVendas.toLocaleString('pt-BR')}</td>
-      <td><span style="font-size:11px;padding:2px 8px;border-radius:999px;background:${ok?'rgba(57,255,20,0.1)':'rgba(255,85,85,0.1)'};color:${ok?'var(--green)':'#ff5555'}">${ok?'✓ Cobre':'✕ Abaixo'}</span></td>
-    `;
-    beTbody.appendChild(tr);
-  });
-}
-
-calcT(); calcF(); calcR(); calcE(); calcC(); calcCV(); calcPV();
+calcT(); calcF(); calcR(); calcE(); calcC(); calcCV();
 </script>
 </body>
 </html>
