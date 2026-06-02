@@ -1335,6 +1335,7 @@ function showSection(id) {
   document.getElementById('topbar-title').textContent = titles[id][0];
   document.getElementById('topbar-model').textContent = titles[id][1];
   if (window.innerWidth <= 860) document.getElementById('sidebar').classList.remove('open');
+  if (id === 'prev') calcPV();
 }
 
 function toggleSidebar() {
