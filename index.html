@@ -416,6 +416,126 @@ input[type=range]::-moz-range-thumb {
   line-height: 1.5;
 }
 
+/* ── PREVISÃO SUBTABS ─────────────────────────── */
+.prev-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--graphite3);
+  border-radius: var(--radius);
+  padding: 3px;
+  width: fit-content;
+}
+.prev-tab {
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.prev-tab:hover { color: var(--text-primary); }
+.prev-tab.active { background: var(--graphite5); color: var(--text-primary); }
+.prev-content { display: none; }
+.prev-content.active { display: block; }
+
+.pmode-btn {
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 400;
+  padding: 6px 16px;
+  border-radius: 999px;
+  border: 1.5px solid var(--border2);
+  background: var(--graphite3);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pmode-btn.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--graphite);
+  font-weight: 500;
+}
+
+.pp-scenario-card {
+  background: var(--graphite2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.pp-sc-header {
+  padding: 11px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.pp-sc-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+}
+.pp-sc-row:last-child { border-bottom: none; }
+.pp-sc-label { color: var(--text-muted); }
+
+.pp-alert {
+  border-radius: var(--radius-sm);
+  padding: 13px 16px;
+  margin-bottom: 10px;
+  font-size: 12.5px;
+  line-height: 1.6;
+  border: 1px solid transparent;
+}
+.pp-alert-title { font-weight: 500; margin-bottom: 3px; color: var(--text-primary); }
+.pp-alert.ok     { background: rgba(57,255,20,0.07);  border-color: rgba(57,255,20,0.15); color: #86efac; }
+.pp-alert.warn   { background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.2); color: #fcd34d; }
+.pp-alert.danger { background: rgba(255,85,85,0.08);  border-color: rgba(255,85,85,0.2);  color: #fca5a5; }
+.pp-alert.info   { background: rgba(96,165,250,0.08); border-color: rgba(96,165,250,0.2); color: #93c5fd; }
+
+.pp-promise-box {
+  background: var(--graphite3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 22px 26px;
+  margin-bottom: 16px;
+}
+.pp-promise-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.pp-promise-text {
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+.pp-promise-note {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+.sens-row td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12.5px;
+  font-family: var(--mono);
+  color: var(--text-secondary);
+}
+.sens-row td:first-child { font-family: var(--font); color: var(--text-primary); }
+.sens-row:last-child td { border-bottom: none; }
+
 /* ── PAYOFF MATRIX ────────────────────────────── */
 .payoff-table {
   width: 100%;
@@ -590,6 +710,11 @@ input[type=range]::-moz-range-thumb {
       <span class="nav-num">↗</span>
       <span class="nav-dot"></span>
       Teoria dos Jogos
+    </button>
+    <button class="nav-item" onclick="showSection('previsao')">
+      <span class="nav-num">↗</span>
+      <span class="nav-dot"></span>
+      Previsão de Performance
     </button>
   </div>
 
@@ -1306,6 +1431,124 @@ input[type=range]::-moz-range-thumb {
       </div>
     </div>
 
+    <!-- ══════════════════════════════════════════ -->
+    <!-- PREVISÃO DE PERFORMANCE                    -->
+    <!-- ══════════════════════════════════════════ -->
+    <div class="section" id="sec-previsao">
+      <div class="section-intro">
+        <div class="section-tag">
+          <span class="section-tag-dot" style="background:#60a5fa"></span>
+          Previsibilidade
+        </div>
+        <h2 class="section-h">Previsão de Performance</h2>
+        <p class="section-desc">Monte o cenário da campanha com os parâmetros reais e veja projeções conservadora, base e agressiva — com análise de sensibilidade, alertas de risco e o texto de alinhamento pronto para apresentar ao cliente.</p>
+      </div>
+
+      <!-- SUBTABS -->
+      <div class="prev-tabs mb24">
+        <button class="prev-tab active" onclick="showPrevTab('inputs')">Inputs</button>
+        <button class="prev-tab" onclick="showPrevTab('cenarios')">Cenários</button>
+        <button class="prev-tab" onclick="showPrevTab('sensibilidade')">Sensibilidade</button>
+        <button class="prev-tab" onclick="showPrevTab('riscos')">Riscos</button>
+        <button class="prev-tab" onclick="showPrevTab('promessa')">Promessa</button>
+      </div>
+
+      <!-- INPUTS -->
+      <div class="prev-content active" id="ptab-inputs">
+        <div style="display:flex;gap:8px;margin-bottom:20px;">
+          <button class="pmode-btn active" id="pbtn-leadgen" onclick="setPMode('leadgen')">Lead Gen</button>
+          <button class="pmode-btn" id="pbtn-ecommerce" onclick="setPMode('ecommerce')">E-commerce</button>
+        </div>
+
+        <div class="grid-2 mb24">
+          <div class="panel">
+            <div class="panel-label">Negócio</div>
+            <div class="field">
+              <div class="field-header"><span class="field-label">Budget mensal</span><span class="field-val c-green" id="pp-budget-v">R$ 10.000</span></div>
+              <input type="range" min="500" max="200000" step="500" value="10000" id="pp-budget" oninput="calcPrevisao()">
+              <div class="field-hint">Total de ad spend que será investido por mês.</div>
+            </div>
+            <div class="field">
+              <div class="field-header"><span class="field-label">Ticket médio</span><span class="field-val" id="pp-ticket-v">R$ 300</span></div>
+              <input type="range" min="30" max="5000" step="10" value="300" id="pp-ticket" oninput="calcPrevisao()">
+            </div>
+            <div class="field">
+              <div class="field-header"><span class="field-label">Margem bruta</span><span class="field-val" id="pp-margem-v">60%</span></div>
+              <input type="range" min="10" max="95" value="60" id="pp-margem" oninput="calcPrevisao()">
+              <div class="field-hint">Infoproduto: 70–90% · Produto físico: 30–60% · Serviço: 50–80%.</div>
+            </div>
+            <div class="field" id="pp-tfech-wrap">
+              <div class="field-header"><span class="field-label">Taxa de fechamento (vendas / leads)</span><span class="field-val" id="pp-tfech-v">20%</span></div>
+              <input type="range" min="1" max="80" value="20" id="pp-tfech" oninput="calcPrevisao()">
+              <div class="field-hint">Consultor / SDR: 15–30% · Automação: 5–15% · Loja física: 30–60%.</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-label">Parâmetros de Mídia — Cenário Base</div>
+            <div class="field">
+              <div class="field-header"><span class="field-label">CPM esperado</span><span class="field-val" id="pp-cpm-v">R$ 15</span></div>
+              <input type="range" min="2" max="100" step="1" value="15" id="pp-cpm" oninput="calcPrevisao()">
+              <div class="field-hint">Meta Feed/Reels: R$ 8–25 · Google Display: R$ 4–15 · TikTok: R$ 10–30 · LinkedIn: R$ 40–80.</div>
+            </div>
+            <div class="field">
+              <div class="field-header"><span class="field-label">CTR esperado</span><span class="field-val" id="pp-ctr-v">1,5%</span></div>
+              <input type="range" min="0.1" max="15" step="0.1" value="1.5" id="pp-ctr" oninput="calcPrevisao()">
+              <div class="field-hint">Meta/Instagram: 1–3% · Google Search: 3–8% · Display: 0,3–1%.</div>
+            </div>
+            <div class="field">
+              <div class="field-header"><span class="field-label">CVR — taxa de conversão da LP</span><span class="field-val" id="pp-cvr-v">8%</span></div>
+              <input type="range" min="0.1" max="30" step="0.1" value="8" id="pp-cvr" oninput="calcPrevisao()">
+              <div class="field-hint">Captura de lead: 20–50% · Venda até R$ 200: 1–3% · High ticket: 0,2–1%.</div>
+            </div>
+            <div class="field">
+              <div class="field-header"><span class="field-label">Variação dos cenários (±%)</span><span class="field-val" id="pp-var-v">30%</span></div>
+              <input type="range" min="5" max="60" value="30" id="pp-var" oninput="calcPrevisao()">
+              <div class="field-hint">Conta nova / primeira campanha → use 40–50%. Histórico de 3+ meses → use 20–25%.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-label">Resumo — Cenário Base</div>
+          <div class="grid-4" id="pp-base-cards" style="margin-top:4px;"></div>
+        </div>
+      </div>
+
+      <!-- CENÁRIOS -->
+      <div class="prev-content" id="ptab-cenarios">
+        <div class="grid-3 mb24" id="pp-scenario-grid"></div>
+        <div class="panel" id="pp-scenario-logic"></div>
+      </div>
+
+      <!-- SENSIBILIDADE -->
+      <div class="prev-content" id="ptab-sensibilidade">
+        <div class="panel">
+          <div class="panel-label">Qual variável mais impacta o ROAS</div>
+          <table style="width:100%;border-collapse:collapse;font-size:12.5px;" id="pp-sens-table">
+            <thead>
+              <tr>
+                <th style="text-align:left;padding:8px 12px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);border-bottom:1px solid var(--border);">Variação</th>
+                <th style="text-align:left;padding:8px 12px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);border-bottom:1px solid var(--border);">Impacto no ROAS</th>
+                <th style="text-align:left;padding:8px 12px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);border-bottom:1px solid var(--border);">Criticidade</th>
+              </tr>
+            </thead>
+            <tbody id="pp-sens-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RISCOS -->
+      <div class="prev-content" id="ptab-riscos">
+        <div id="pp-riscos"></div>
+      </div>
+
+      <!-- PROMESSA -->
+      <div class="prev-content" id="ptab-promessa">
+        <div id="pp-promessa"></div>
+      </div>
+    </div>
+
   </div><!-- /content -->
 </main>
 
@@ -1323,6 +1566,7 @@ const titles = {
   escala: ['CPA Escalonado', 'Modelo 02c'],
   creative: ['Performance Creative', 'Modelo 03'],
   prev: ['Previsibilidade de Mídia Paga', 'Teoria dos Jogos'],
+  previsao: ['Previsão de Performance', 'Cenários Conservador · Base · Agressivo'],
 };
 
 function showSection(id) {
@@ -1336,6 +1580,7 @@ function showSection(id) {
   document.getElementById('topbar-model').textContent = titles[id][1];
   if (window.innerWidth <= 860) document.getElementById('sidebar').classList.remove('open');
   if (id === 'prev') calcPV();
+  if (id === 'previsao') calcPrevisao();
 }
 
 function toggleSidebar() {
@@ -1744,7 +1989,157 @@ function calcPV() {
   });
 }
 
-calcT(); calcF(); calcR(); calcE(); calcC(); calcCV(); calcPV();
+// ── PREVISÃO DE PERFORMANCE ──────────────────────
+let pMode = 'leadgen';
+
+function setPMode(m) {
+  pMode = m;
+  document.getElementById('pbtn-leadgen').classList.toggle('active', m === 'leadgen');
+  document.getElementById('pbtn-ecommerce').classList.toggle('active', m === 'ecommerce');
+  document.getElementById('pp-tfech-wrap').style.display = m === 'ecommerce' ? 'none' : '';
+  calcPrevisao();
+}
+
+function showPrevTab(t) {
+  document.querySelectorAll('.prev-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.prev-content').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.prev-tab[onclick="showPrevTab('${t}')"]`).classList.add('active');
+  document.getElementById('ptab-' + t).classList.add('active');
+}
+
+function calcScen(budget, cpm, ctr, cvr, ticket, tfech, margem) {
+  const impressoes = (budget / cpm) * 1000;
+  const cliques    = impressoes * (ctr / 100);
+  const cpc        = cliques > 0 ? budget / cliques : 0;
+  const leads      = cliques * (cvr / 100);
+  const cpl        = leads > 0 ? budget / leads : 0;
+  const conversoes = pMode === 'leadgen' ? leads * (tfech / 100) : leads;
+  const receita    = conversoes * ticket;
+  const cpa        = conversoes > 0 ? budget / conversoes : 0;
+  const roas       = budget > 0 ? receita / budget : 0;
+  const lucro      = receita * (margem / 100) - budget;
+  return { impressoes, cliques, cpc, leads, cpl, conversoes, receita, cpa, roas, lucro };
+}
+
+function calcPrevisao() {
+  const budget = +document.getElementById('pp-budget').value;
+  const ticket  = +document.getElementById('pp-ticket').value;
+  const margem  = +document.getElementById('pp-margem').value;
+  const tfech   = +document.getElementById('pp-tfech').value;
+  const cpm     = +document.getElementById('pp-cpm').value;
+  const ctr     = +document.getElementById('pp-ctr').value;
+  const cvr     = +document.getElementById('pp-cvr').value;
+  const varPct  = +document.getElementById('pp-var').value;
+
+  document.getElementById('pp-budget-v').textContent = brl(budget);
+  document.getElementById('pp-ticket-v').textContent = brl(ticket);
+  document.getElementById('pp-margem-v').textContent = p(margem);
+  document.getElementById('pp-tfech-v').textContent  = p(tfech);
+  document.getElementById('pp-cpm-v').textContent    = brl(cpm);
+  document.getElementById('pp-ctr-v').textContent    = ctr.toFixed(1).replace('.',',') + '%';
+  document.getElementById('pp-cvr-v').textContent    = cvr.toFixed(1).replace('.',',') + '%';
+  document.getElementById('pp-var-v').textContent    = p(varPct);
+
+  const v = varPct / 100;
+  const base = calcScen(budget, cpm,          ctr,       cvr,       ticket, tfech,       margem);
+  const cons = calcScen(budget, cpm*(1+v),    ctr*(1-v), cvr*(1-v), ticket, tfech*(1-v/2), margem);
+  const agr  = calcScen(budget, cpm*(1-v/2),  ctr*(1+v), cvr*(1+v), ticket, tfech*(1+v/2), margem);
+
+  // Base cards
+  document.getElementById('pp-base-cards').innerHTML = `
+    <div class="metric-card"><div class="metric-label">Impressões</div><div class="metric-value c-muted">${Math.round(base.impressoes).toLocaleString('pt-BR')}</div><div class="metric-sub">por mês</div></div>
+    <div class="metric-card"><div class="metric-label">Cliques · CPC</div><div class="metric-value c-blue">${Math.round(base.cliques).toLocaleString('pt-BR')}</div><div class="metric-sub">${brl(base.cpc)} por clique</div></div>
+    <div class="metric-card"><div class="metric-label">${pMode==='leadgen'?'Leads · CPL':'Conversões · CPA'}</div><div class="metric-value c-purple">${Math.round(base.leads).toLocaleString('pt-BR')}</div><div class="metric-sub">${brl(base.cpl)} por lead</div></div>
+    <div class="metric-card"><div class="metric-label">Receita · ROAS</div><div class="metric-value ${base.roas>=1?'c-green':'c-red'}">${brl(base.receita)}</div><div class="metric-sub">ROAS ${base.roas.toFixed(1)}x</div></div>
+  `;
+
+  // Scenario cards
+  function scCard(label, s, accent) {
+    const lucroCol = s.lucro >= 0 ? 'c-green' : 'c-red';
+    return `<div class="pp-scenario-card">
+      <div class="pp-sc-header" style="background:rgba(${accent},0.12);color:rgb(${accent})">${label}</div>
+      <div class="pp-sc-row"><span class="pp-sc-label">Impressões</span><span>${Math.round(s.impressoes).toLocaleString('pt-BR')}</span></div>
+      <div class="pp-sc-row"><span class="pp-sc-label">Cliques</span><span>${Math.round(s.cliques).toLocaleString('pt-BR')}</span></div>
+      <div class="pp-sc-row"><span class="pp-sc-label">CPC</span><span>${brl(s.cpc)}</span></div>
+      <div class="pp-sc-row"><span class="pp-sc-label">${pMode==='leadgen'?'Leads':'Conversões'}</span><span>${Math.round(s.leads).toLocaleString('pt-BR')}</span></div>
+      <div class="pp-sc-row"><span class="pp-sc-label">CPL / CPA</span><span>${brl(s.cpl)}</span></div>
+      ${pMode==='leadgen'?`<div class="pp-sc-row"><span class="pp-sc-label">Vendas</span><span>${Math.round(s.conversoes).toLocaleString('pt-BR')}</span></div>`:''}
+      <div class="pp-sc-row"><span class="pp-sc-label">Receita</span><span style="color:rgb(${accent})">${brl(s.receita)}</span></div>
+      <div class="pp-sc-row"><span class="pp-sc-label">ROAS</span><span style="color:rgb(${accent})">${s.roas.toFixed(2)}x</span></div>
+      <div class="pp-sc-row"><span class="pp-sc-label">Lucro bruto</span><span class="${lucroCol}">${s.lucro>=0?'+':''}${brl(s.lucro)}</span></div>
+    </div>`;
+  }
+  document.getElementById('pp-scenario-grid').innerHTML =
+    scCard('Conservador', cons, '57,255,20') +
+    scCard('Base', base, '96,165,250') +
+    scCard('Agressivo', agr, '245,158,11');
+
+  document.getElementById('pp-scenario-logic').innerHTML = `
+    <div class="panel-label">O que muda em cada cenário</div>
+    <div class="pp-alert info" style="margin-top:12px"><div class="pp-alert-title">Conservador</div>CPM mais alto (+${varPct}%), CTR e CVR mais baixos (−${varPct}%). Simula conta nova, learning phase ou criativo fraco.</div>
+    <div class="pp-alert info"><div class="pp-alert-title">Base</div>Seus parâmetros como informados. Use como referência de trabalho, não como promessa ao cliente.</div>
+    <div class="pp-alert info"><div class="pp-alert-title">Agressivo</div>CPM ligeiramente menor (−${varPct/2}%), CTR e CVR mais altos (+${varPct}%). Simula criativo forte, oferta validada e público aquecido.</div>
+  `;
+
+  // Sensitivity
+  function deltaRoas(c2, t2, v2, f2) {
+    const s = calcScen(budget, c2, t2, v2, ticket, f2, margem);
+    return base.roas > 0 ? ((s.roas - base.roas) / base.roas * 100).toFixed(1) : '0.0';
+  }
+  const sensRows = [
+    ['CPM sobe 20%',             deltaRoas(cpm*1.2,ctr,cvr,tfech),   'alta'],
+    ['CPM cai 20%',              deltaRoas(cpm*0.8,ctr,cvr,tfech),   'baixa'],
+    ['CTR cai 20%',              deltaRoas(cpm,ctr*0.8,cvr,tfech),   'alta'],
+    ['CTR sobe 20%',             deltaRoas(cpm,ctr*1.2,cvr,tfech),   'baixa'],
+    ['CVR cai 20%',              deltaRoas(cpm,ctr,cvr*0.8,tfech),   'alta'],
+    ['CVR sobe 20%',             deltaRoas(cpm,ctr,cvr*1.2,tfech),   'baixa'],
+    ...(pMode==='leadgen'?[
+      ['Taxa fechamento cai 20%', deltaRoas(cpm,ctr,cvr,tfech*0.8), 'média'],
+      ['Taxa fechamento sobe 20%',deltaRoas(cpm,ctr,cvr,tfech*1.2), 'baixa'],
+    ]:[]),
+  ];
+  document.getElementById('pp-sens-body').innerHTML = sensRows.map(([lbl, d, niv]) => {
+    const dv = parseFloat(d);
+    const vc = dv < -15 ? 'c-red' : dv < -5 ? 'c-amber' : dv > 5 ? 'c-green' : 'c-muted';
+    const nc = niv==='alta' ? 'c-red' : niv==='média' ? 'c-amber' : 'c-green';
+    return `<tr class="sens-row"><td>${lbl}</td><td class="${vc}">${dv>0?'+':''}${d}%</td><td class="${nc}">${niv}</td></tr>`;
+  }).join('');
+
+  // Risks
+  const risks = [];
+  if (base.roas < 1.5)  risks.push({t:'danger', title:'ROAS abaixo de 1.5x', body:'A campanha pode gerar prejuízo mesmo com receita positiva. Revise a margem ou reduza o CPA-alvo antes de confirmar.'});
+  if (ctr > 3)          risks.push({t:'warn',   title:'CTR alto — verifique qualidade', body:'CTR acima de 3% pode indicar criativo clickbait com alto bounce. Monitore tempo na página e qualificação dos leads.'});
+  if (cvr > 15)         risks.push({t:'warn',   title:'CVR otimista', body:'Taxa de conversão acima de 15% é rara em tráfego frio. Valide com dados históricos antes de usar como premissa.'});
+  if (cpm < 8)          risks.push({t:'warn',   title:'CPM muito baixo', body:'CPM abaixo de R$8 é incomum para B2C no Brasil. Verifique se a segmentação está ampla demais ou o objetivo está errado.'});
+  if (base.lucro < 0)   risks.push({t:'danger', title:'Lucro negativo no cenário base', body:'Com esses parâmetros, a operação não cobre o investimento. Renegocie ticket, margem ou CPA-alvo.'});
+  if (budget > 50000)   risks.push({t:'warn',   title:'Risco de saturação de público', body:'Budgets acima de R$50k/mês saturam audiências rapidamente. Planeje expansão de público ou diversificação de canais.'});
+  if (cons.lucro < 0)   risks.push({t:'warn',   title:'Cenário conservador no prejuízo', body:'Mesmo no cenário mais pessimista, a operação precisa ser sustentável. Considere reduzir o budget ou melhorar a oferta primeiro.'});
+  if (risks.length === 0) risks.push({t:'ok', title:'Sem alertas críticos', body:'Os parâmetros estão dentro de faixas razoáveis. Mantenha monitoramento semanal de CPM, CTR e CVR nos primeiros 30 dias.'});
+  document.getElementById('pp-riscos').innerHTML = risks.map(r =>
+    `<div class="pp-alert ${r.t}"><div class="pp-alert-title">${r.title}</div>${r.body}</div>`
+  ).join('');
+
+  // Promise
+  const lr  = `${Math.round(cons.leads).toLocaleString('pt-BR')}–${Math.round(agr.leads).toLocaleString('pt-BR')}`;
+  const cplR = `${brl(agr.cpl)}–${brl(cons.cpl)}`;
+  const rr  = `${cons.roas.toFixed(1)}x–${agr.roas.toFixed(1)}x`;
+  const vr  = pMode==='leadgen'
+    ? `${Math.round(cons.conversoes).toLocaleString('pt-BR')}–${Math.round(agr.conversoes).toLocaleString('pt-BR')} vendas/mês`
+    : `${Math.round(cons.conversoes).toLocaleString('pt-BR')}–${Math.round(agr.conversoes).toLocaleString('pt-BR')} pedidos/mês`;
+
+  document.getElementById('pp-promessa').innerHTML = `
+    <div class="pp-promise-box">
+      <div class="pp-promise-label">Texto de alinhamento com o cliente</div>
+      <div class="pp-promise-text">"Com investimento de ${brl(budget)}/mês, e assumindo as hipóteses de CPM, CTR e CVR informadas, estimamos ${lr} ${pMode==='leadgen'?'leads':'conversões'}/mês com CPL na faixa de ${cplR}. ${pMode==='leadgen'?`Se a taxa de fechamento ficar entre ${Math.round(tfech*0.7)}–${Math.round(tfech*1.3)}%, isso representa ${vr}. `:''}O ROAS estimado fica entre ${rr} dependendo da qualidade do criativo, da oferta e da maturidade da conta."</div>
+      <div class="pp-promise-note">Use este texto como base de alinhamento. Mostre as hipóteses ao cliente e peça validação antes de comprometer qualquer número.</div>
+    </div>
+    <div class="pp-alert ok"><div class="pp-alert-title">O que pode ser prometido agora</div>CPM, CTR e CPC nos primeiros 14–21 dias. Faixa de CPL após 30 dias de otimização.</div>
+    <div class="pp-alert warn"><div class="pp-alert-title">O que não deve ser prometido ainda</div>ROAS final, receita e vendas — dependem de conversão comercial, qualidade do lead e taxa de fechamento que só o cliente controla.</div>
+    <div class="pp-alert info"><div class="pp-alert-title">Métricas para recalibrar em 30 dias</div>CPM real vs estimado, CTR real, CVR da LP e qualificação dos leads. Com esses dados, refaça o modelo e ajuste o range.</div>
+  `;
+}
+
+calcT(); calcF(); calcR(); calcE(); calcC(); calcCV(); calcPV(); calcPrevisao();
 </script>
 </body>
 </html>
